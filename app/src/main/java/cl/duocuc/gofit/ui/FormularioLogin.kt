@@ -16,11 +16,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController // <-- 1. IMPORTANTE: Importar NavController
 import cl.duoc.basico.viewmodel.FormularioViewModel
 
 
 @Composable
-fun FormularioLogin(viewModel: FormularioViewModel) {
+// 2. Añadir NavController como parámetro
+fun FormularioLogin(navController: NavController, viewModel: FormularioViewModel) {
 
     var abrirModal by remember { mutableStateOf(false) }
 
@@ -34,21 +37,21 @@ fun FormularioLogin(viewModel: FormularioViewModel) {
             onValueChange = { viewModel.formulario.nombre = it },
             label = { Text("Ingresa nombre") },
             isError = !viewModel.verificarNombre(),
-            supportingText = { Text( viewModel.mensajesError.nombre, color = androidx.compose.ui.graphics.Color.Red) }
+            supportingText = { Text( viewModel.mensajesError.nombre, color = Color.Red) }
         )
         OutlinedTextField(
             value = viewModel.formulario.correo,
             onValueChange = { viewModel.formulario.correo = it },
             label = { Text("Ingresa correo") },
             isError = !viewModel.verificarCorreo(),
-            supportingText = { Text( viewModel.mensajesError.correo, color = androidx.compose.ui.graphics.Color.Red) }
+            supportingText = { Text( viewModel.mensajesError.correo, color = Color.Red) }
         )
         OutlinedTextField(
             value = viewModel.formulario.edad,
             onValueChange = { viewModel.formulario.edad = it },
             label = { Text("Ingresa edad") },
             isError = !viewModel.verificarEdad(),
-            supportingText = { Text( viewModel.mensajesError.edad, color = androidx.compose.ui.graphics.Color.Red) }
+            supportingText = { Text( viewModel.mensajesError.edad, color = Color.Red) }
         )
         Checkbox(
             checked = viewModel.formulario.terminos,
@@ -69,14 +72,23 @@ fun FormularioLogin(viewModel: FormularioViewModel) {
 
         if (abrirModal) {
             AlertDialog(
-                onDismissRequest = { },
+                onDismissRequest = { /* No hacer nada para forzar una acción */ },
                 title = { Text("Confirmación") },
                 text = { Text("Formulario enviado correctamente") },
                 confirmButton = {
-                    Button(onClick = { abrirModal = false }) { Text("OK") }
+                    Button(onClick = {
+                        abrirModal = false
+                        // 3. NAVEGAR A HOME AL PRESIONAR OK
+                        navController.navigate("home") {
+                            // Limpia la pila de navegación hasta la pantalla de inicio
+                            // para que el usuario no pueda volver al login con el botón de "atrás".
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }) {
+                        Text("OK")
+                    }
                 }
             )
         }
-
     }
 }
