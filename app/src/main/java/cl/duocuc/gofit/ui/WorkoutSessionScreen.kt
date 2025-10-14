@@ -23,10 +23,10 @@ import cl.duocuc.gofit.viewmodel.WorkoutViewModel
 @Composable
 fun WorkoutSessionScreen(
     navController: NavController,
-    // Inyectamos el ViewModel
+
     workoutViewModel: WorkoutViewModel = viewModel()
 ) {
-    // Recolectamos el estado de los ejercicios desde el ViewModel
+
     val ejercicios by workoutViewModel.ejercicios.collectAsState()
     var showTimerDialog by remember { mutableStateOf(false) }
 
@@ -56,7 +56,7 @@ fun WorkoutSessionScreen(
     }
 
     if (showTimerDialog) {
-        // ... (el código del TimerDialog se mantiene igual)
+
     }
 }
 
@@ -78,14 +78,14 @@ fun EjercicioCard(
         ) {
             Text(ejercicioLog.nombre, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
 
-            // Cabeceras de la tabla
+
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text("Serie", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
                 Text("Peso (kg)", modifier = Modifier.weight(2f), fontWeight = FontWeight.Bold)
                 Text("Reps", modifier = Modifier.weight(2f), fontWeight = FontWeight.Bold)
             }
 
-            // Filas de series dinámicas
+
             ejercicioLog.series.forEach { serie ->
                 SerieRow(
                     serie = serie,
@@ -94,7 +94,7 @@ fun EjercicioCard(
                 )
             }
 
-            // Botones de acción
+
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = onAddSerie) { Text("Añadir Serie") }
                 Button(onClick = onStartTimer) { Text("Descanso") }
