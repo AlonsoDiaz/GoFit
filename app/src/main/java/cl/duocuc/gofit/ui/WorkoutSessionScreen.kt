@@ -1,5 +1,11 @@
 package cl.duocuc.gofit.ui
 
+import android.content.Context
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,14 +16,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.getSystemService
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import cl.duocuc.gofit.data.model.EjercicioLog
 import cl.duocuc.gofit.data.model.Serie
+import cl.duocuc.gofit.viewmodel.TimerViewModel
 import cl.duocuc.gofit.viewmodel.WorkoutViewModel
 
 @Composable
@@ -31,7 +40,9 @@ fun WorkoutSessionScreen(
     var showTimerDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
@@ -56,7 +67,9 @@ fun WorkoutSessionScreen(
     }
 
     if (showTimerDialog) {
-
+        TimerDialog(
+            onDismiss = { showTimerDialog = false }
+        )
     }
 }
 
@@ -128,4 +141,68 @@ fun SerieRow(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
+}
+
+// ... (código anterior)
+
+@Composable
+fun TimerDialog(
+    timerViewModel: TimerViewModel = viewModel(),
+    onDismiss: () -> Unit
+) {
+    val tiempo by timerViewModel.tiempoRestante.collectAsState()
+    val estaCorriendo by timerViewModel.estaCorriendo.collectAsState()
+    val context = LocalContext.current // Obtenemos el contexto para acceder a servicios del sistema
+
+    LaunchedEffect(Unit) {
+        timerViewModel.iniciarTimer(segundos = 150) { // Usamos 5 segundos para probar rápido
+            //Vibración
+            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+
+                vibrator.vibrate(500)
+            }
+
+            //Sonido
+            try {
+                val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                val r = RingtoneManager.getRingtone(context, notification)
+                r.play()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    // ... (el resto del AlertDialog se mantiene igual)
+    AlertDialog(
+        onDismissRequest = {
+            timerViewModel.detenerTimer()
+            onDismiss()
+        },
+        title = { Text("Tiempo de Descanso") },
+        text = {
+            Text(
+                text = tiempo,
+                fontSize = 56.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    timerViewModel.detenerTimer()
+                    onDismiss()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Detener y Cerrar")
+            }
+        }
+    )
 }
