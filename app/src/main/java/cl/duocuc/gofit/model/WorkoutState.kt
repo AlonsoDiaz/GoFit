@@ -8,7 +8,7 @@ data class Serie(
 
 data class EjercicioLog(
     val nombre: String,
-    val series: MutableList<Serie> = mutableListOf(Serie(numero = 1)) // Cada ejercicio empieza con una serie vacía
+    val series: MutableList<Serie> = mutableListOf(Serie(numero = 1))
 )
 
 

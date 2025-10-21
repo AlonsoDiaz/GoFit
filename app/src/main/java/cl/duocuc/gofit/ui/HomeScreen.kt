@@ -32,9 +32,9 @@ fun HomeScreen(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
 
-        verticalArrangement = Arrangement.Center // Cambiado para centrar todo verticalmente
+        verticalArrangement = Arrangement.Center
     ) {
-        Text("¡Bienvenido a GoFit!", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text("¡Comienza tu cambio!!", fontSize = 28.sp, fontWeight = FontWeight.Bold)
 
 
         Button(
@@ -43,7 +43,7 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .height(80.dp)
         ) {
-            Text("Comenzar Entrenamiento de Hoy", fontSize = 20.sp)
+            Text("Empezar Entrenamiento de Hoy", fontSize = 20.sp)
         }
 
 

@@ -1,31 +1,52 @@
 package cl.duocuc.gofit.viewmodel
 
-
-
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import cl.duocuc.gofit.data.model.EjercicioLog
 import cl.duocuc.gofit.data.model.Serie
+import cl.duocuc.gofit.model.HistorialEntrenamiento
+import cl.duocuc.gofit.repository.ProgresoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.Date
 
-class WorkoutViewModel : ViewModel() {
+
+class WorkoutViewModel(
+    private val progresoRepository: ProgresoRepository
+) : ViewModel() {
 
     private val _ejercicios = MutableStateFlow<List<EjercicioLog>>(emptyList())
-    val ejercicios = _ejercicios.asStateFlow()
+    val ejercicios: StateFlow<List<EjercicioLog>> = _ejercicios.asStateFlow()
 
-    init {
-        // Simula la carga de ejercicios de una rutina
-        cargarEjercicios()
-    }
 
-    private fun cargarEjercicios() {
-        _ejercicios.value = listOf(
-            EjercicioLog("Press de Banca"),
-            EjercicioLog("Press Inclinado"),
-            EjercicioLog("Aperturas con Mancuerna")
-        )
+    private var rutinaId: String? = null
+    private var rutinaNombre: String? = null
+
+
+    fun cargarEjerciciosDeRutina(id: String) {
+        rutinaId = id
+
+        when (id) {
+            "rutina_del_dia" -> {
+                rutinaNombre = "Entrenamiento de Pecho"
+                _ejercicios.value = listOf(
+                    EjercicioLog("Press de Banca"),
+                    EjercicioLog("Press Inclinado"),
+                    EjercicioLog("Aperturas con Mancuerna")
+                )
+            }
+            // Agrega más casos para otras rutinas
+            else -> {
+                rutinaNombre = "Rutina General"
+                _ejercicios.value = listOf(
+                    EjercicioLog("Sentadillas"),
+                    EjercicioLog("Flexiones")
+                )
+            }
+        }
     }
 
     fun agregarSerie(nombreEjercicio: String) {
@@ -69,5 +90,36 @@ class WorkoutViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+
+    fun finalizarYGuardarEntrenamiento() {
+        viewModelScope.launch {
+
+            val ejerciciosCompletados = _ejercicios.value.filter { it.series.isNotEmpty() }
+
+            if (ejerciciosCompletados.isNotEmpty()) {
+
+                val historial = HistorialEntrenamiento(
+
+                    fecha = Date(System.currentTimeMillis()),
+                    nombreRutina = rutinaNombre ?: "Entrenamiento",
+                    ejercicios = ejerciciosCompletados
+                )
+
+
+                progresoRepository.guardarHistorialEntrenamiento(historial)
+
+
+                limpiarEstado()
+            }
+        }
+    }
+
+
+    private fun limpiarEstado() {
+        _ejercicios.value = emptyList()
+        rutinaId = null
+        rutinaNombre = null
     }
 }

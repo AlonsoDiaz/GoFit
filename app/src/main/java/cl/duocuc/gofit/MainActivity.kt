@@ -4,43 +4,48 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.NavType
 import cl.duoc.basico.viewmodel.FormularioViewModel
-import cl.duocuc.gofit.ui.FormularioLogin
-import cl.duocuc.gofit.ui.HomeScreen
-import cl.duocuc.gofit.ui.RutinaDetailScreen
-import cl.duocuc.gofit.ui.RutinasScreen
+// Importa las clases necesarias
+import cl.duocuc.gofit.repository.ProgresoRepository
+import cl.duocuc.gofit.ui.*
 import cl.duocuc.gofit.ui.theme.GoFitTheme
-import cl.duocuc.gofit.ui.WorkoutSessionScreen
-
+import cl.duocuc.gofit.uiimport.ProgresoScreen
+import cl.duocuc.gofit.viewmodel.ProgresoViewModel
+import cl.duocuc.gofit.viewmodel.WorkoutViewModel
 
 class MainActivity : ComponentActivity() {
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             GoFitTheme {
-
                 GoFitApp()
             }
         }
     }
 }
 
-
 @Composable
 fun GoFitApp() {
     val navController = rememberNavController()
+
+
     val formularioViewModel: FormularioViewModel = viewModel()
+
+
+    val progresoRepository = ProgresoRepository()
+
+
+    val workoutViewModel: WorkoutViewModel = viewModel { WorkoutViewModel(progresoRepository) }
+    val progresoViewModel: ProgresoViewModel = viewModel { ProgresoViewModel(progresoRepository) }
+
 
     NavHost(
         navController = navController,
@@ -81,15 +86,27 @@ fun GoFitApp() {
 
         // 4. Ruta para la pantalla de Progreso
         composable("progreso") {
-            // Este es un marcador de posición, puedes crear la pantalla más adelante
-            Text("Pantalla de Progreso")
+            ProgresoScreen(
+                navController = navController,
+                progresoViewModel = progresoViewModel // Le pasas la instancia ya creada
+            )
         }
 
         // 5. Ruta para una Sesión de Entrenamiento
-        composable("workout_session/{rutinaId}") {
-            // El backStackEntry ya no se usa, pero la ruta se mantiene
-            WorkoutSessionScreen(navController = navController)
+        composable(
+            route = "workout_session/{rutinaId}",
+            arguments = listOf(navArgument("rutinaId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val rutinaId = backStackEntry.arguments?.getString("rutinaId")
+            WorkoutSessionScreen(
+                rutinaId = rutinaId ?: "default_rutina_id",
+                workoutViewModel = workoutViewModel, // Le pasas la instancia ya creada
+                onFinishWorkout = {
+                    navController.navigate("progreso") {
+                        popUpTo("home")
+                    }
+                }
+            )
         }
     }
 }
-

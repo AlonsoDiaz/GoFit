@@ -7,5 +7,5 @@ data class Rutina(
     val id: String,
     val nombre: String,
     val descripcion: String,
-    val ejercicios: List<Ejercicio> = emptyList() // <-- AÑADIR ESTO
+    val ejercicios: List<Ejercicio> = emptyList()
 )

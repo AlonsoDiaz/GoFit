@@ -17,6 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController // <-- 1. IMPORTANTE: Importar NavController
 import cl.duoc.basico.viewmodel.FormularioViewModel
 
@@ -32,6 +34,8 @@ fun FormularioLogin(navController: NavController, viewModel: FormularioViewModel
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text("¡Bienvenido a GoFit!", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+
         OutlinedTextField(
             value = viewModel.formulario.nombre,
             onValueChange = { viewModel.formulario.nombre = it },

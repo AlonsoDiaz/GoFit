@@ -21,9 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.getSystemService
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import cl.duocuc.gofit.data.model.EjercicioLog
 import cl.duocuc.gofit.data.model.Serie
 import cl.duocuc.gofit.viewmodel.TimerViewModel
@@ -31,13 +29,18 @@ import cl.duocuc.gofit.viewmodel.WorkoutViewModel
 
 @Composable
 fun WorkoutSessionScreen(
-    navController: NavController,
-
-    workoutViewModel: WorkoutViewModel = viewModel()
+    rutinaId: String,
+    workoutViewModel: WorkoutViewModel, // Recibe el ViewModel desde el NavHost
+    onFinishWorkout: () -> Unit // Recibe la acción para finalizar
 ) {
 
     val ejercicios by workoutViewModel.ejercicios.collectAsState()
     var showTimerDialog by remember { mutableStateOf(false) }
+
+    // Carga los ejercicios para la rutinaId especificada cuando la pantalla se muestra por primera vez
+    LaunchedEffect(rutinaId) {
+        workoutViewModel.cargarEjerciciosDeRutina(rutinaId)
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -46,7 +49,8 @@ fun WorkoutSessionScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Text("Sesión: Rutina de Pecho", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            // El título podría ser dinámico en el futuro
+            Text("Sesión de Entrenamiento", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
 
         items(ejercicios, key = { it.nombre }) { ejercicio ->
@@ -60,7 +64,16 @@ fun WorkoutSessionScreen(
         }
 
         item {
-            Button(onClick = { navController.popBackStack() }, modifier = Modifier.fillMaxWidth()) {
+            // El botón ahora guarda y luego navega
+            Button(
+                onClick = {
+                    // 1. Llama a la función del ViewModel para guardar los datos
+                    workoutViewModel.finalizarYGuardarEntrenamiento()
+                    // 2. Ejecuta la lambda para navegar a la pantalla de progreso
+                    onFinishWorkout()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Finalizar Entrenamiento")
             }
         }
@@ -143,7 +156,7 @@ fun SerieRow(
     }
 }
 
-// ... (código anterior)
+// ... (El código de TimerDialog se mantiene igual)
 
 @Composable
 fun TimerDialog(
@@ -151,21 +164,20 @@ fun TimerDialog(
     onDismiss: () -> Unit
 ) {
     val tiempo by timerViewModel.tiempoRestante.collectAsState()
-    val estaCorriendo by timerViewModel.estaCorriendo.collectAsState()
     val context = LocalContext.current // Obtenemos el contexto para acceder a servicios del sistema
 
     LaunchedEffect(Unit) {
-        timerViewModel.iniciarTimer(segundos = 150) { // Usamos 5 segundos para probar rápido
-            //Vibración
+        timerViewModel.iniciarTimer(segundos = 150) { // Duración del temporizador
+            // Vibración al finalizar
             val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE))
             } else {
-
+                @Suppress("DEPRECATION")
                 vibrator.vibrate(500)
             }
 
-            //Sonido
+            // Sonido de notificación al finalizar
             try {
                 val notification: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 val r = RingtoneManager.getRingtone(context, notification)
@@ -176,7 +188,6 @@ fun TimerDialog(
         }
     }
 
-    // ... (el resto del AlertDialog se mantiene igual)
     AlertDialog(
         onDismissRequest = {
             timerViewModel.detenerTimer()
@@ -201,7 +212,7 @@ fun TimerDialog(
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Detener y Cerrar")
+                Text("Omitir y Cerrar")
             }
         }
     )
