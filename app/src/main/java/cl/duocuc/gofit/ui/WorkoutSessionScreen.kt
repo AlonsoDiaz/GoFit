@@ -6,6 +6,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,17 +33,23 @@ import cl.duocuc.gofit.data.model.Serie
 import cl.duocuc.gofit.viewmodel.TimerViewModel
 import cl.duocuc.gofit.viewmodel.WorkoutViewModel
 
+
 @Composable
 fun WorkoutSessionScreen(
     rutinaId: String,
-    workoutViewModel: WorkoutViewModel, // Recibe el ViewModel desde el NavHost
-    onFinishWorkout: () -> Unit // Recibe la acción para finalizar
+    workoutViewModel: WorkoutViewModel,
+    onFinishWorkout: () -> Unit
 ) {
+
+    RequestNotificationPermission()
 
     val ejercicios by workoutViewModel.ejercicios.collectAsState()
     var showTimerDialog by remember { mutableStateOf(false) }
 
-    // Carga los ejercicios para la rutinaId especificada cuando la pantalla se muestra por primera vez
+
+    val context = LocalContext.current
+
+
     LaunchedEffect(rutinaId) {
         workoutViewModel.cargarEjerciciosDeRutina(rutinaId)
     }
@@ -49,7 +61,6 @@ fun WorkoutSessionScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            // El título podría ser dinámico en el futuro
             Text("Sesión de Entrenamiento", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
 
@@ -64,12 +75,10 @@ fun WorkoutSessionScreen(
         }
 
         item {
-            // El botón ahora guarda y luego navega
+
             Button(
                 onClick = {
-                    // 1. Llama a la función del ViewModel para guardar los datos
-                    workoutViewModel.finalizarYGuardarEntrenamiento()
-                    // 2. Ejecuta la lambda para navegar a la pantalla de progreso
+                    workoutViewModel.finalizarYGuardarEntrenamiento(context)
                     onFinishWorkout()
                 },
                 modifier = Modifier.fillMaxWidth()
@@ -104,22 +113,26 @@ fun EjercicioCard(
         ) {
             Text(ejercicioLog.nombre, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
 
-
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text("Serie", modifier = Modifier.weight(1f), fontWeight = FontWeight.Bold)
                 Text("Peso (kg)", modifier = Modifier.weight(2f), fontWeight = FontWeight.Bold)
                 Text("Reps", modifier = Modifier.weight(2f), fontWeight = FontWeight.Bold)
             }
 
-
             ejercicioLog.series.forEach { serie ->
-                SerieRow(
-                    serie = serie,
-                    onPesoChange = { peso -> onPesoChange(serie, peso) },
-                    onRepsChange = { reps -> onRepsChange(serie, reps) }
-                )
-            }
 
+                AnimatedVisibility(
+                    visible = true,
+                    enter = expandVertically(animationSpec = tween(300)),
+                    exit = shrinkVertically(animationSpec = tween(300))
+                ) {
+                    SerieRow(
+                        serie = serie,
+                        onPesoChange = { peso -> onPesoChange(serie, peso) },
+                        onRepsChange = { reps -> onRepsChange(serie, reps) }
+                    )
+                }
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = onAddSerie) { Text("Añadir Serie") }
@@ -136,7 +149,7 @@ fun SerieRow(
     onRepsChange: (String) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -145,18 +158,18 @@ fun SerieRow(
             value = serie.peso,
             onValueChange = onPesoChange,
             modifier = Modifier.weight(2f),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true // Para mejor UI
         )
         OutlinedTextField(
             value = serie.repeticiones,
             onValueChange = onRepsChange,
             modifier = Modifier.weight(2f),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            singleLine = true // Para mejor UI
         )
     }
 }
-
-// ... (El código de TimerDialog se mantiene igual)
 
 @Composable
 fun TimerDialog(
@@ -164,7 +177,7 @@ fun TimerDialog(
     onDismiss: () -> Unit
 ) {
     val tiempo by timerViewModel.tiempoRestante.collectAsState()
-    val context = LocalContext.current // Obtenemos el contexto para acceder a servicios del sistema
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         timerViewModel.iniciarTimer(segundos = 150) { // Duración del temporizador
@@ -216,4 +229,26 @@ fun TimerDialog(
             }
         }
     )
+}
+
+@Composable
+fun RequestNotificationPermission() {
+    // Solo necesitamos pedir permiso en Android 13 (API 33) o superior
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+            onResult = { isGranted ->
+                if (isGranted) {
+
+                } else {
+
+                }
+            }
+        )
+
+
+        LaunchedEffect(Unit) {
+            launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 }

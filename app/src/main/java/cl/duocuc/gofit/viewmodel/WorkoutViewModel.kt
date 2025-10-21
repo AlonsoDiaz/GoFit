@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
+import android.content.Context
+import cl.duocuc.gofit.util.NotificationHelper
 
 
 class WorkoutViewModel(
@@ -93,23 +95,25 @@ class WorkoutViewModel(
     }
 
 
-    fun finalizarYGuardarEntrenamiento() {
+    fun finalizarYGuardarEntrenamiento(context: Context) {
         viewModelScope.launch {
-
             val ejerciciosCompletados = _ejercicios.value.filter { it.series.isNotEmpty() }
 
             if (ejerciciosCompletados.isNotEmpty()) {
-
+                val nombreRutinaGuardada = rutinaNombre ?: "Entrenamiento"
                 val historial = HistorialEntrenamiento(
-
-                    fecha = Date(System.currentTimeMillis()),
-                    nombreRutina = rutinaNombre ?: "Entrenamiento",
+                    fecha = java.util.Date(System.currentTimeMillis()),
+                    nombreRutina = nombreRutinaGuardada,
                     ejercicios = ejerciciosCompletados
                 )
 
-
                 progresoRepository.guardarHistorialEntrenamiento(historial)
 
+
+                val notificationHelper = NotificationHelper(context)
+
+                notificationHelper.showWorkoutCompletedNotification(nombreRutinaGuardada)
+                // -----------------------------
 
                 limpiarEstado()
             }

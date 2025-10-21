@@ -33,7 +33,7 @@ class  FormularioRepository {
 
     fun validacionEdad(): Boolean {
         val edadInt = formulario.edad.toIntOrNull()
-        if (edadInt == null || edadInt < 0 || edadInt > 120)
+        if (edadInt == null || edadInt < 0 || edadInt > 90)
             return false
         else
             return true

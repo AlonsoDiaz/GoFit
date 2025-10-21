@@ -88,7 +88,7 @@ fun GoFitApp() {
         composable("progreso") {
             ProgresoScreen(
                 navController = navController,
-                progresoViewModel = progresoViewModel // Le pasas la instancia ya creada
+                progresoViewModel = progresoViewModel
             )
         }
 
@@ -100,7 +100,7 @@ fun GoFitApp() {
             val rutinaId = backStackEntry.arguments?.getString("rutinaId")
             WorkoutSessionScreen(
                 rutinaId = rutinaId ?: "default_rutina_id",
-                workoutViewModel = workoutViewModel, // Le pasas la instancia ya creada
+                workoutViewModel = workoutViewModel,
                 onFinishWorkout = {
                     navController.navigate("progreso") {
                         popUpTo("home")
