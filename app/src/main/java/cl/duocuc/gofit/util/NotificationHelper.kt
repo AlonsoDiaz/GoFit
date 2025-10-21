@@ -1,4 +1,4 @@
-// En cl/duocuc/gofit/util/NotificationHelper.kt
+
 package cl.duocuc.gofit.util
 
 import android.app.NotificationChannel
