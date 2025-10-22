@@ -45,6 +45,6 @@ class TimerViewModel : ViewModel() {    private val _tiempoRestante = MutableSta
 
     override fun onCleared() {
         super.onCleared()
-        countDownTimer?.cancel() // Asegura que el timer se cancele si el ViewModel se destruye
+        countDownTimer?.cancel()
     }
 }

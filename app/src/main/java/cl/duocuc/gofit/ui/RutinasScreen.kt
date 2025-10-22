@@ -1,6 +1,6 @@
 package cl.duocuc.gofit.ui
 
-// ... otras importaciones
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,12 +24,12 @@ import cl.duocuc.gofit.viewmodel.FakeRutinaRepository
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RutinasScreen(navController: NavController) {
-    // Usamos el repositorio falso para obtener los datos
+
     val rutinas = remember { FakeRutinaRepository().getRutinas() }
 
     Scaffold(
         floatingActionButton = {
-            // ... (código del FAB se mantiene igual)
+
         }
     ) { paddingValues ->
         Column(
@@ -56,10 +56,10 @@ fun RutinasScreen(navController: NavController) {
     }
 }
 
-// Modificamos RutinaCard para que acepte un lambda onClick
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RutinaCard(rutina: Rutina, onClick: () -> Unit) { // Ahora 'Rutina' será reconocido
+fun RutinaCard(rutina: Rutina, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),

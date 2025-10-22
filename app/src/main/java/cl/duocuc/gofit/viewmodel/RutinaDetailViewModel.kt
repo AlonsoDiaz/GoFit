@@ -11,17 +11,16 @@ class RutinaDetailViewModel : ViewModel() {
     private val _rutina = MutableStateFlow<Rutina?>(null)
     val rutina = _rutina.asStateFlow()
 
-    // Este es un repositorio falso para simular la obtención de datos
+
     private val fakeRepository = FakeRutinaRepository()
 
     fun cargarRutina(rutinaId: String) {
-        // En una app real, llamarías al repositorio para obtener los datos de la DB
+
         _rutina.value = fakeRepository.getRutinaById(rutinaId)
     }
 }
 
-// --- Repositorio Falso para Simulación ---
-// Esto lo creamos para tener datos de prueba sin configurar una base de datos aún.
+
 class FakeRutinaRepository {
     private val rutinasDePrueba = listOf(
         Rutina(
