@@ -113,7 +113,7 @@ class WorkoutViewModel(
                 val notificationHelper = NotificationHelper(context)
 
                 notificationHelper.showWorkoutCompletedNotification(nombreRutinaGuardada)
-                // -----------------------------
+                
 
                 limpiarEstado()
             }
