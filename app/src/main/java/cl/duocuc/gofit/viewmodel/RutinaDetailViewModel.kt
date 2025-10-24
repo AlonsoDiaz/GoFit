@@ -39,7 +39,7 @@ class FakeRutinaRepository {
                 Ejercicio(id = "e6", nombre = "Prensa de Piernas", series = "4", repeticiones = "10-12")
             )
         ),
-        Rutina(id = "3", nombre = "Espalda y Bíceps", descripcion = "Rutina de hipertrofia") // Sin ejercicios para probar
+        Rutina(id = "3", nombre = "Espalda y Bíceps", descripcion = "Rutina de hipertrofia") 
     )
 
     fun getRutinas(): List<Rutina> = rutinasDePrueba
