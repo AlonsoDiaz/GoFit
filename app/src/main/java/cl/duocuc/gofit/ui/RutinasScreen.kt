@@ -38,7 +38,7 @@ fun RutinasScreen(navController: NavController) {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            // El título que tenías aquí
+           
             Text("Mis Rutinas", fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(16.dp))
 
