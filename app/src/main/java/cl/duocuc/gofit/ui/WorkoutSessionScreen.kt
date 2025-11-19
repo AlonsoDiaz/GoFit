@@ -291,7 +291,7 @@ fun TimerDialog(
 
 @Composable
 fun RequestNotificationPermission() {
-    // Solo necesitamos pedir permiso en Android 13 (API 33) o superior
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission(),

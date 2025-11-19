@@ -12,7 +12,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import cl.duoc.basico.viewmodel.FormularioViewModel
-// Importa las clases necesarias
 import cl.duocuc.gofit.repository.ProgresoRepository
 import cl.duocuc.gofit.ui.*
 import cl.duocuc.gofit.ui.theme.GoFitTheme
