@@ -1,6 +1,5 @@
 package cl.duocuc.gofit.ui
 
-// ... otras importaciones
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,6 +29,21 @@ fun RutinasScreen(navController: NavController) {
     val rutinas = remember { FakeRutinaRepository().getRutinas() }
 
     Scaffold(
+        // --- INICIO DE LA MODIFICACIÓN ---
+        topBar = {
+            TopAppBar(
+                title = { Text("Mis Rutinas") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver atrás"
+                        )
+                    }
+                }
+            )
+        },
+        // --- FIN DE LA MODIFICACIÓN ---
         floatingActionButton = {
             // ... (código del FAB se mantiene igual)
         }
@@ -36,11 +52,11 @@ fun RutinasScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp) // Ajuste de padding
         ) {
-            // El título que tenías aquí
-            Text("Mis Rutinas", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(16.dp))
+            // El título que tenías aquí ya no es necesario, porque está en la TopAppBar.
+            // Text("Mis Rutinas", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            // Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(rutinas, key = { it.id }) { rutina ->

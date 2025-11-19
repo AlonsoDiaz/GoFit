@@ -16,7 +16,7 @@ import cl.duoc.basico.viewmodel.FormularioViewModel
 import cl.duocuc.gofit.repository.ProgresoRepository
 import cl.duocuc.gofit.ui.*
 import cl.duocuc.gofit.ui.theme.GoFitTheme
-import cl.duocuc.gofit.uiimport.ProgresoScreen
+
 import cl.duocuc.gofit.viewmodel.ProgresoViewModel
 import cl.duocuc.gofit.viewmodel.WorkoutViewModel
 
@@ -105,7 +105,8 @@ fun GoFitApp() {
                     navController.navigate("progreso") {
                         popUpTo("home")
                     }
-                }
+                },
+                navController = navController // <-- ¡AQUÍ ESTÁ LA CORRECCIÓN!
             )
         }
     }

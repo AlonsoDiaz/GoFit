@@ -1,8 +1,10 @@
-package cl.duocuc.gofit.uiimport
+package cl.duocuc.gofit.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons // <-- 1. IMPORTAR ICONOS
+import androidx.compose.material.icons.automirrored.filled.ArrowBack // <-- 1. IMPORTAR FLECHA
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,7 +30,19 @@ fun ProgresoScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Mi Progreso") })
+            TopAppBar(
+                title = { Text("Mi Progreso") },
+                // --- INICIO DE LA MODIFICACIÓN ---
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) { // 2. AÑADIR ACCIÓN DE VOLVER
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, // 3. USAR EL ÍCONO DE FLECHA
+                            contentDescription = "Volver atrás"
+                        )
+                    }
+                }
+                // --- FIN DE LA MODIFICACIÓN ---
+            )
         }
     ) { paddingValues ->
         Column(
