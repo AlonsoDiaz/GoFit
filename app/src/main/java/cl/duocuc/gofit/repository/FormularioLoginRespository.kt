@@ -1,50 +1,21 @@
 package cl.duocuc.gofit.repository
 
-import cl.duocuc.gofit.model.FormularioModel
-import cl.duocuc.gofit.model.MensajesError
+import cl.duocuc.gofit.data.local.UserDao
+import cl.duocuc.gofit.data.local.UserEntity
 
+class FormularioRepository(
+    private val userDao: UserDao
+) {
 
-class  FormularioRepository {
-
-    private var formulario = FormularioModel()
-    private var errores = MensajesError()
-
-    fun getFormulario():  FormularioModel = formulario
-    fun getMensajesError():  MensajesError = errores
-
-
-    fun cambiarNombre(nuevoNombre: String) {
-        formulario.nombre = nuevoNombre
+    suspend fun findUserByEmail(correo: String): UserEntity? {
+        return userDao.getUserByCorreo(correo)
     }
 
-    fun validacionNombre(): Boolean {
-        if(formulario.nombre=="")
-            return false
-        else
-            return true
+    suspend fun upsertUser(user: UserEntity) {
+        userDao.upsert(user)
     }
 
-    fun validacionCorreo(): Boolean {
-        if (!formulario.correo.matches(Regex("^[\\w.-]+@[\\w.-]+\\.\\w+$")))
-            return false
-        else
-            return true
+    suspend fun getLastUser(): UserEntity? {
+        return userDao.getLastSignedUser()
     }
-
-    fun validacionEdad(): Boolean {
-        val edadInt = formulario.edad.toIntOrNull()
-        if (edadInt == null || edadInt < 0 || edadInt > 90)
-            return false
-        else
-            return true
-    }
-
-    fun validacionTerminos(): Boolean {
-        if (!formulario.terminos)
-            return false
-        else
-            return true
-    }
-
-
 }

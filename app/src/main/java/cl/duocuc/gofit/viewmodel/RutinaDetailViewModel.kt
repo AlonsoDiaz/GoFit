@@ -1,49 +1,64 @@
 package cl.duocuc.gofit.viewmodel
 
 import androidx.lifecycle.ViewModel
-import cl.duocuc.gofit.data.model.Ejercicio
-
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import cl.duocuc.gofit.model.Rutina
+import cl.duocuc.gofit.repository.RoutinesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class RutinaDetailViewModel : ViewModel() {
-    private val _rutina = MutableStateFlow<Rutina?>(null)
-    val rutina = _rutina.asStateFlow()
+class RutinaDetailViewModel(
+    private val repository: RoutinesRepository
+) : ViewModel() {
 
-
-    private val fakeRepository = FakeRutinaRepository()
+    private val _uiState = MutableStateFlow(RutinaDetailUiState())
+    val uiState: StateFlow<RutinaDetailUiState> = _uiState.asStateFlow()
 
     fun cargarRutina(rutinaId: String) {
+        _uiState.value = RutinaDetailUiState(isLoading = true)
+        viewModelScope.launch {
+            runCatching { repository.getRoutineById(rutinaId) }
+                .onSuccess { rutina ->
+                    if (rutina != null) {
+                        _uiState.value = RutinaDetailUiState(rutina = rutina)
+                    } else {
+                        _uiState.value = RutinaDetailUiState(errorMessage = "Rutina no encontrada")
+                    }
+                }
+                .onFailure { throwable ->
+                    _uiState.value = RutinaDetailUiState(
+                        errorMessage = throwable.message ?: "No se pudo cargar la rutina"
+                    )
+                }
+        }
+    }
 
-        _rutina.value = fakeRepository.getRutinaById(rutinaId)
+    fun marcarError(message: String) {
+        _uiState.value = RutinaDetailUiState(errorMessage = message)
+    }
+
+    companion object {
+        fun provideFactory(repository: RoutinesRepository): ViewModelProvider.Factory {
+            return object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    if (modelClass.isAssignableFrom(RutinaDetailViewModel::class.java)) {
+                        return RutinaDetailViewModel(repository) as T
+                    }
+                    throw IllegalArgumentException("Unknown ViewModel class")
+                }
+            }
+        }
     }
 }
 
-
-class FakeRutinaRepository {
-    private val rutinasDePrueba = listOf(
-        Rutina(
-            id = "1", nombre = "Día de Pecho y Tríceps", descripcion = "Enfoque en fuerza",
-            ejercicios = listOf(
-                Ejercicio(id = "e1", nombre = "Press de Banca", series = "4", repeticiones = "6-8"),
-                Ejercicio(id = "e2", nombre = "Press Inclinado con Mancuernas", series = "3", repeticiones = "8-12"),
-                Ejercicio(id = "e3", nombre = "Fondos para Tríceps", series = "3", repeticiones = "Al fallo")
-            )
-        ),
-        Rutina(
-            id = "2", nombre = "Pierna (Día Pesado)", descripcion = "Sentadillas, peso muerto y más",
-            ejercicios = listOf(
-                Ejercicio(id = "e4", nombre = "Sentadillas", series = "5", repeticiones = "5"),
-                Ejercicio(id = "e5", nombre = "Peso Muerto Rumano", series = "3", repeticiones = "8-10"),
-                Ejercicio(id = "e6", nombre = "Prensa de Piernas", series = "4", repeticiones = "10-12")
-            )
-        ),
-        Rutina(id = "3", nombre = "Espalda y Bíceps", descripcion = "Rutina de hipertrofia") 
-    )
-
-    fun getRutinas(): List<Rutina> = rutinasDePrueba
-    fun getRutinaById(id: String): Rutina? = rutinasDePrueba.find { it.id == id }
-}
+data class RutinaDetailUiState(
+    val rutina: Rutina? = null,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
+)
 
 

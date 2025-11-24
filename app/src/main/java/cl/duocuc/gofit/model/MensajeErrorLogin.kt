@@ -1,14 +1,8 @@
 package cl.duocuc.gofit.model
 
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-
-
-class MensajesError {
-    var nombre: String = ""
-    var correo: String = ""
-    var edad: String = ""
-    var terminos: String = ""
-}
+data class MensajesError(
+    val nombre: String = "",
+    val correo: String = "",
+    val edad: String = "",
+    val terminos: String = ""
+)

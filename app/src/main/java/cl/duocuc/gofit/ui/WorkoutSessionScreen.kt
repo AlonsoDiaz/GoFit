@@ -91,10 +91,12 @@ fun WorkoutSessionScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // El texto del título ahora está en la TopAppBar, así que este item se puede eliminar si se desea.
-            // item {
-            //    Text("Sesión de Entrenamiento", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-            // }
+            item {
+                Text(
+                    text = "Registra tus series, pesos y descansos para llevar un control preciso de esta sesión.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
             items(ejercicios, key = { it.nombre }) { ejercicio ->
                 EjercicioCard(

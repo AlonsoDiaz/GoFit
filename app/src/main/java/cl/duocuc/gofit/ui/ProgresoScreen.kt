@@ -56,6 +56,11 @@ fun ProgresoScreen(
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
+            Text(
+                "Consulta los entrenamientos completados y recuerda cómo avanzaste en cada sesión registrada.",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
             if (historial.isEmpty()) {
                 Box(
