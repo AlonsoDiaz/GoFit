@@ -32,16 +32,16 @@ fun ProgresoScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Mi Progreso") },
-                // --- INICIO DE LA MODIFICACIÓN ---
+
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) { // 2. AÑADIR ACCIÓN DE VOLVER
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, // 3. USAR EL ÍCONO DE FLECHA
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Volver atrás"
                         )
                     }
                 }
-                // --- FIN DE LA MODIFICACIÓN ---
+
             )
         }
     ) { paddingValues ->

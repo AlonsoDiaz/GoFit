@@ -43,36 +43,36 @@ fun WorkoutSessionScreen(
     rutinaId: String,
     workoutViewModel: WorkoutViewModel,
     onFinishWorkout: () -> Unit,
-    // --- 1. SE AÑADE NAVCONTROLLER PARA LA NAVEGACIÓN ---
+
     navController: NavController
 ) {
     RequestNotificationPermission()
 
     val ejercicios by workoutViewModel.ejercicios.collectAsState()
     var showTimerDialog by remember { mutableStateOf(false) }
-    // --- 2. ESTADO PARA CONTROLAR EL DIÁLOGO DE CONFIRMACIÓN ---
+
     var showExitConfirmationDialog by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
-    // Carga los ejercicios cuando la pantalla se muestra por primera vez
+
     LaunchedEffect(rutinaId) {
         workoutViewModel.cargarEjerciciosDeRutina(rutinaId)
     }
 
-    // --- 3. LÓGICA PARA INTERCEPTAR EL BOTÓN "ATRÁS" DEL SISTEMA ---
+
     BackHandler {
         showExitConfirmationDialog = true
     }
 
-    // --- 4. SE ENVUELVE TODO EN UN SCAFFOLD ---
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Sesión de Entrenamiento") },
                 navigationIcon = {
                     IconButton(onClick = {
-                        // Muestra el diálogo en lugar de navegar directamente
+
                         showExitConfirmationDialog = true
                     }) {
                         Icon(
@@ -126,7 +126,7 @@ fun WorkoutSessionScreen(
         TimerDialog(onDismiss = { showTimerDialog = false })
     }
 
-    // --- 5. MOSTRAR EL DIÁLOGO DE CONFIRMACIÓN SI ES NECESARIO ---
+
     if (showExitConfirmationDialog) {
         AlertDialog(
             onDismissRequest = { showExitConfirmationDialog = false },

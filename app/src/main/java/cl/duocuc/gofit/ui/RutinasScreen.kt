@@ -123,9 +123,7 @@ fun RutinaCard(rutina: Rutina, onClick: () -> Unit) {
             if (rutina.descripcion.isNotBlank()) {
                 Text(rutina.descripcion, style = MaterialTheme.typography.bodyMedium)
             }
-            // Los campos 'dificultad' y 'tipoEntrenamiento' pueden no estar en tu modelo `Rutina`
-            // Si no existen, puedes eliminar las siguientes líneas sin problema.
-            // Si existen, asegúrate de que el modelo los tiene definidos.
+
             rutina.dificultad?.takeIf { it.isNotBlank() }?.let {
                 Text("Dificultad: $it", style = MaterialTheme.typography.bodySmall)
             }

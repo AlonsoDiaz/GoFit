@@ -16,14 +16,14 @@ import androidx.navigation.NavController
 import cl.duocuc.gofit.data.model.Ejercicio
 import cl.duocuc.gofit.viewmodel.RutinaDetailViewModel
 
-@OptIn(ExperimentalMaterial3Api::class) // Necesario para TopAppBar
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RutinaDetailScreen(
     navController: NavController,
     rutinaId: String?,
     viewModel: RutinaDetailViewModel
 ) {
-    // Carga los datos de la rutina la primera vez que la pantalla aparece
+
     LaunchedEffect(rutinaId) {
         if (rutinaId != null) {
             viewModel.cargarRutina(rutinaId)
@@ -35,7 +35,7 @@ fun RutinaDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val currentRutina = uiState.rutina
 
-    // --- INICIO DE LA MODIFICACIÓN ---
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -58,7 +58,7 @@ fun RutinaDetailScreen(
             )
         }
     ) { paddingValues ->
-        // --- FIN DE LA MODIFICACIÓN ---
+
 
         when {
             uiState.isLoading -> {
@@ -77,14 +77,13 @@ fun RutinaDetailScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        // Aplicar padding del Scaffold y un padding adicional
+
                         .padding(paddingValues)
                         .padding(horizontal = 16.dp)
                 ) {
                 // 1. Cabecera con el nombre y descripción
                 item {
-                    // El título principal se puede mover a un Text más grande si se prefiere
-                    // o dejarlo solo en la TopAppBar. Por ahora lo dejamos para mantener el diseño.
+
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(rutina.nombre, fontSize = 28.sp, fontWeight = FontWeight.Bold)
                     if (rutina.descripcion.isNotBlank()) {
