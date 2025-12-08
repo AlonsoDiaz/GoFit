@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -110,9 +111,16 @@ fun RutinasScreen(navController: NavController, viewModel: RoutinesViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RutinaCard(rutina: Rutina, onClick: () -> Unit) {
+    val backgroundColor = when (rutina.dificultad?.trim()?.lowercase()) {
+        "Principiante", "principiante", "basic" -> Color(0xFFC8E6C9)
+        "intermedio", "intermediate" -> Color(0xFFFFF9C4)
+        "alta", "avanzado", "advanced" -> Color(0xFFFFCDD2)
+        else -> MaterialTheme.colorScheme.surface
+    }
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         onClick = onClick
     ) {
         Column(

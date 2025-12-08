@@ -74,6 +74,10 @@ fun GoFitApp(
             )
         }
 
+        composable("terms") {
+            TermsAndConditionsScreen(navController = navController)
+        }
+
         // 2. Ruta de la Pantalla Principal (Home)
         composable("home") {
             HomeScreen(

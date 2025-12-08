@@ -1,12 +1,15 @@
 package cl.duocuc.gofit.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -19,9 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.navigation.NavController
+import cl.duocuc.gofit.R
 import cl.duocuc.gofit.viewmodel.FormularioViewModel
 
 @Composable
@@ -39,6 +48,13 @@ fun FormularioLogin(navController: NavController, viewModel: FormularioViewModel
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logotipo de GoFit",
+            modifier = Modifier
+                .height(120.dp)
+                .padding(bottom = 16.dp)
+        )
         Text("¡Bienvenido a GoFit!", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -93,11 +109,39 @@ fun FormularioLogin(navController: NavController, viewModel: FormularioViewModel
             }
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Checkbox(
-            checked = formulario.terminos,
-            onCheckedChange = viewModel::onTerminosChange,
-        )
-        Text("Acepta los términos")
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = formulario.terminos,
+                onCheckedChange = viewModel::onTerminosChange,
+            )
+            val termsText = buildAnnotatedString {
+                append("He leído y acepto ")
+                pushStringAnnotation(tag = "TERMS", annotation = "terms")
+                withStyle(
+                    SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
+                    append("los términos y condiciones")
+                }
+                pop()
+            }
+            ClickableText(
+                modifier = Modifier.padding(start = 8.dp),
+                text = termsText,
+                style = MaterialTheme.typography.bodyMedium,
+                onClick = { offset ->
+                    termsText
+                        .getStringAnnotations(tag = "TERMS", start = offset, end = offset)
+                        .firstOrNull()
+                        ?.let {
+                            navController.navigate("terms")
+                        }
+                }
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
